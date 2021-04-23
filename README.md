@@ -25,9 +25,13 @@ summary(data)
     ##                     Max.   :5.000                     
     ##                     NA's   :8
 
+## librerias
+a continuacion se muestran las librerias utilizadas
 ``` r
 #install.packages("tidyverse")
 library(tidyverse)
+library(ggplot2)
+library(tools)
 ```
 
     ## Warning: package 'tidyverse' was built under R version 4.0.5
@@ -49,33 +53,27 @@ library(tidyverse)
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
+## Filtrar las mejores hamburguesas.
+se filtraran las mejores hamburguesas para asi ver de primera cuales son las que tienen mejores calificaciones
 ``` r
-### Filtrar las mejores hamburguesas.
-
-#se filtraran las mejores hamburguesas para asi ver de primera cuales son las que tienen mejores calificaciones
 mejores_hamburguesas<- filter(data, nota >= 5)
 ```
-
+## Separar los ingredientes de las mejores hamburguesas
+de esta manera se busca tener todos los ingredientes separados y poder ver cuales son los mejores, porque estos seran los mas utilizados por lo que tendran una mayor frecuencia de uso.
 ``` r
-### Separar los ingredientes de las mejores hamburguesas
-
-# de esta manera se busca tener todos los ingredientes separados y poder ver cuales son los mejores, porque estos seran los mas utilizados por lo que tendran una mayor frecuencia de uso.
 mejores_ingredientes<- strsplit(mejores_hamburguesas$Ingredientes, split=",") 
 ingredientes_separados = data.frame(unlist(mejores_ingredientes))
 ```
-
+## Diminucion de ruido
+capitalizar los ingredientes para no tener tanto ruido en los datos
 ``` r
-### Diminucion de ruido
 
-#capitalizar los ingredientes para no tener tanto ruido en los datos
-library(tools)
 texto_columnas <-unlist(lapply(ingredientes_separados, FUN=toTitleCase))
 ```
+## Contando ingredientes
+Aqui se cuentan los ingredientes que mas se repiten para asi tener la frecuencia de estos
 
 ``` r
-### Contando ingredientes
-
-#Aqui se cuentan los ingredientes que mas se repiten para asi tener la frecuencia de estos
 tabla <- table(texto_columnas)
 tabla <- tibble(word = names(tabla), count = as.numeric(tabla))
 tabla <- arrange(tabla, desc(count))
@@ -98,15 +96,17 @@ tabla
     ## # ... with 210 more rows
 
 ``` r
-library(ggplot2)
+
 gg = ggplot(data  = tabla, aes(x=word, y=count))
 gg + geom_bar(stat = "identity")
 ```
 
 ![](hamburguesas_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
+## Eleccion de ingredientes.
+para la eleccion de la hamburguesa se utilizaran los primeros 9 ingredientes,pan de hamburguesa y hamburguesa ya que estas son por defecto las mas utilizadas en el mercado
 ``` r
-#para la eleccion de la hamburguesa se utilizaran los primeros 9 ingredientes,pan de hamburguesa y hamburguesa ya que estas son por defecto las mas utilizadas en el mercado
+
 hamburguesas<- filter(tabla, count>=3 )
 hamburguesas
 ```
